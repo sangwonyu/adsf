@@ -1,0 +1,21 @@
+package ch04;
+
+public class IfExam {
+
+	public static void main(String[] args) {
+		int score =93;
+				
+			if(score>=90) {
+				System.out.println("점수가 90보다 큽니다.");
+				System.out.println("등급은 A입니다.");
+			}
+			
+			if(score<90) {
+				System.out.println("점수가 90보다 WKRTMQSLEK..");
+				System.out.println("등급은 B입니다.");
+			}
+		// TODO Auto-generated method stub
+
+	}
+
+}
