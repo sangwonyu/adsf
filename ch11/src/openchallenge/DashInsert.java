@@ -23,9 +23,9 @@ public class DashInsert {
 		for (int i = 0; i < str.length() - 1; i++) {
 			if (num[i] == num[i + 1]) {
 				if (num[i] == 1) {
-					strBuilder.insert(i+1, "*");
+					strBuilder.insert(i + 1, "*");
 				} else if (num[i] == 0) {
-					strBuilder.insert(i+1, "-");
+					strBuilder.insert(i + 1, "-");
 				}
 			}
 		}
