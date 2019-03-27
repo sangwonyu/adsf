@@ -22,7 +22,7 @@ public class CodingExercise02 {
 		}
 		
 		//올림차순정렬
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length-1; i++) {
 			for (int z = i + 1; z < length; z++) {
 				if (num2[i] > num2[z]) {
 					tmp = num2[i];
@@ -33,7 +33,7 @@ public class CodingExercise02 {
 		}
 		System.out.print("입력한 수 "+num);
 		//크기비교
-		for(int i=0;i<length;i++) {
+		for(int i=0;i<length-1;i++) {
 			if(num2[i]==num2[(i+1)]) {
 				a=true;
 				System.out.print(a+", ");
