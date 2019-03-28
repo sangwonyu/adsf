@@ -3,32 +3,19 @@ package openchallenge;
 public class DashInsert {
 
 	public void dashInsert(String str) {
-		String a;
-		String b;
-		int[] num = new int[str.length()];
 
-		// 짝수 홀수
-		for (int i = 0; i < str.length(); i++) {
-			num[i] = (int) str.charAt(i);
-			if (num[i] % 2 == 0) {
-				num[i] = 1;
-			} else
-				num[i] = 0;
-		}
-		for (int i = 0; i < str.length(); i++) {
-			System.out.print(num[i] + " ");
-		}
-		System.out.println();
-		StringBuilder strBuilder = new StringBuilder(str);
-		for (int i = 0; i < str.length() - 1; i++) {
-			if (num[i] == num[i + 1]) {
-				if (num[i] == 1) {
-					strBuilder.insert(i + 1, "*");
-				} else if (num[i] == 0) {
-					strBuilder.insert(i + 1, "-");
-				}
+		StringBuilder sb = new StringBuilder(str);
+
+		for (int i = 0; i < sb.length() - 1; i++) {
+			if ((int) sb.charAt(i) % 2 == 0 && (int) sb.charAt(i + 1) % 2 == 0 && (int) sb.charAt(i) != 42
+					&& (int) sb.charAt(i + 1) != 42) {
+				sb.insert(i + 1, "*");
+			} else if ((int) sb.charAt(i) % 2 != 0 && (int) sb.charAt(i + 1) % 2 != 0 && (int) sb.charAt(i) != 45
+					&& (int) sb.charAt(i + 1) != 45) {
+				sb.insert(i + 1, "-");
 			}
 		}
-		System.out.println(strBuilder.toString());
+		System.out.println(sb.toString());
 	}
+
 }
