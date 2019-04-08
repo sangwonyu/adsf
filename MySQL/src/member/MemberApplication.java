@@ -48,8 +48,7 @@ public class MemberApplication {
 						System.out.println(mems.toString());
 					}
 				}
-			}
-			else if (selecNum == 3) {
+			} else if (selecNum == 3) {
 				// 멤버변경
 				System.out.println("멤버 내용 변경");
 				MemberDTO mDto = new MemberDTO();
@@ -67,35 +66,35 @@ public class MemberApplication {
 				mDto.setAddress(scanner.nextLine());
 				mDao.MemberUpdate(mDto);
 				System.out.println(mDao.selectOne(num).toString());// 변경후
-			}
-			else if (selecNum == 4) {
+			} else if (selecNum == 4) {
 				System.out.println("삭제할 id입력하세요");
 				int num = Integer.parseInt(scanner.nextLine());
 				mDao.deleteMember(num);
 				System.out.println(mDao.toString());
-			}
-			else if (selecNum == 5) {
+			} else if (selecNum == 5) {
 				System.out.println("검색할 이름을 입력하세요>");
 				String name = scanner.nextLine();
 				List<MemberDTO> dt = mDao.selectName(name);
 				for (MemberDTO nameList : dt) {
 					System.out.println(nameList.toString());
 				}
-			}
-			else if (selecNum == 6) {
+			} else if (selecNum == 6) {
 				run = false;
 			}
 		}
-		System.out.println("Login:id");
-		int id= Integer.parseInt(scanner.nextLine());
-		System.out.println("password");
-		String pass=scanner.nextLine();
 		System.out.println("로그인?y,n로대답");
-		String answer =scanner.nextLine();
-		String a="y";
-		if(answer.equals(a)) {
-			mDao.corr(id,pass);
-		}else {System.out.println("시스템종료");
+		String answer = scanner.nextLine();
+		String a = "y";
+		if (answer.equals(a)) {
+			System.out.println("Login:id");
+			int id = Integer.parseInt(scanner.nextLine());
+			System.out.println("password");
+			String pass = scanner.nextLine();
+			
+				mDao.corr(id, pass);
+			
+		} else {
+			System.out.println("시스템종료");
 		}
 	}
 }

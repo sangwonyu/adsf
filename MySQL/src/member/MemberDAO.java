@@ -169,14 +169,19 @@ public class MemberDAO {
 		}
 	}
 
-	public void corr(int id, String pass) {
+	public boolean corr(int id, String pass) {
 		MemberDAO mDao = new MemberDAO();
 		MemberDTO mem = mDao.selectOne(id);System.out.println(mem.toString());
-		
+		if(id!=mem.getId()) {
+			System.out.println("잘못된 아이디입니다.");
+			return false;
+		} 
 		if (pass.equals(mem.getPassword())) {
 			System.out.println("로그인이 되었습니다.");
+			return true;
 		} else {
 			System.out.println("password가 틀렸습니다.");
+			return false;
 		}
 	}
 }

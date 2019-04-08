@@ -23,10 +23,10 @@ public class EaglesTest {
 		player=eDao.selectOne(5);
 		System.out.println(player.toString());*/
 		
-		/*List<EaglesDTO> playerList = eDao.selectAll();
+		List<EaglesDTO> playerList = eDao.selectAll();
 		for(EaglesDTO eagle:playerList) {
 			System.out.println(eagle.toString());
-		}*/
+		}
 		
 		//String positions[]= {"투수","포수","내야수","외야수"};
 		/*System.out.println("연봉2억 이상인 선수는");
