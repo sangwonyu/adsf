@@ -9,13 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberDAO {
-	private Connection conn;
+	public static final int ID_PASSWORD_MATCH = 1;
+	public static final int ID_DOES_NOT_EXIST = 2;
+	public static final int PASSWORD_IS_WRONG = 3;
+	public static final int DATABASE_ERROR = -1;
+	Connection conn;
     private static final String USERNAME = "javauser";
     private static final String PASSWORD = "javapass";
     private static final String URL = "jdbc:mysql://localhost:3306/world?verifyServerCertificate=false&useSSL=false";
 
     public MemberDAO() {
-    	try {
+    	try { 
 			Class.forName("com.mysql.jdbc.Driver");	
 			conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
     	} catch (Exception ex) {
@@ -23,46 +27,49 @@ public class MemberDAO {
 		}
     }
     
-    public void insertMember(MemberDTO member) {
-    	String query = "insert into member_table(password, name, birthday, address) values (?, ?, ?, ?);";
-    	PreparedStatement pStmt = null;
-    	try {
+	public int verifyIdPassword(int id, String password) {
+		System.out.println("verifyIdPassword(): " + id + ", " + password);
+		String query = "select hashed from member_table where id=?;";
+		PreparedStatement pStmt = null;
+		ResultSet rs = null;
+		String hashedPassword = "";
+		try {
 			pStmt = conn.prepareStatement(query);
-			pStmt.setString(1, member.getPassword());
-			pStmt.setString(2, member.getName());
-			pStmt.setString(3, member.getBirthday());
-			pStmt.setString(4, member.getAddress());
-			
-			pStmt.executeUpdate();
+			pStmt.setInt(1, id);
+			rs = pStmt.executeQuery();
+			while (rs.next()) {	
+				hashedPassword = rs.getString(1);
+				if (BCrypt.checkpw(password, hashedPassword))
+					return ID_PASSWORD_MATCH;
+				else
+					return PASSWORD_IS_WRONG;
+			}
+			return ID_DOES_NOT_EXIST;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
+				rs.close();
 				if (pStmt != null && !pStmt.isClosed()) 
 					pStmt.close();
 			} catch (SQLException se) {
 				se.printStackTrace();
 			}
-		}	
-    }
+		}
+		return DATABASE_ERROR;
+	}
     
-    public void initPassword() {
-    	List<MemberDTO> mList = selectAll();
-    	for (MemberDTO member: mList) {
-    		int id = member.getId();
-    		String plainPassword = member.getPassword();
-    		String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt());
-    		updatePassword(id, hashedPassword);
-    	}
-    }
-    
-    public void updatePassword(int id, String hashed) {
-    	String query = "update member_table set hashed=? where id=?;";
+    public void insertMember(MemberDTO member) {
+    	String query = "insert into member_table(password, name, birthday, address, hashed) values (?, ?, ?, ?, ?);";
     	PreparedStatement pStmt = null;
     	try {
+    		String hashedPassword = BCrypt.hashpw(member.getPassword(), BCrypt.gensalt());
 			pStmt = conn.prepareStatement(query);
-			pStmt.setString(1, hashed);
-			pStmt.setInt(2, id);
+			pStmt.setString(1, "*");
+			pStmt.setString(2, member.getName());
+			pStmt.setString(3, member.getBirthday());
+			pStmt.setString(4, member.getAddress());
+			pStmt.setString(5, hashedPassword);
 			
 			pStmt.executeUpdate();
 		} catch (Exception e) {
@@ -161,7 +168,7 @@ public class MemberDAO {
     }
     
     public List<MemberDTO> selectAll() {
-    	String query = "select * from member_table order by id desc;";
+    	String query = "select * from member_table;";
     	PreparedStatement pStmt = null;
     	List<MemberDTO> memberList = new ArrayList<MemberDTO>();
     	try {
