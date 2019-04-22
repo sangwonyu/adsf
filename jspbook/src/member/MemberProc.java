@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class MemberProc
@@ -39,6 +40,8 @@ public class MemberProc extends HttpServlet {
 		String birthday = null;
 		String address = null;
 		String message = null;
+		HttpSession session = request.getSession();
+		
 		request.setCharacterEncoding("UTF-8");
 		String action = request.getParameter("action");
 		
@@ -46,6 +49,16 @@ public class MemberProc extends HttpServlet {
 		case "update":		// 수정 버튼 클릭 시
 			if (!request.getParameter("id").equals("")) {
 				id = Integer.parseInt(request.getParameter("id"));
+			}
+			if(id!=(Integer)session.getAttribute("memberId")) {
+				
+				message = "id = " + id + " 에 대한 수정 권한이 없습니다..";
+				String url = "loginMain.jsp";
+				request.setAttribute("message", message);
+				request.setAttribute("url", url);
+				rd = request.getRequestDispatcher("alertMsg.jsp");
+				rd.forward(request, response);
+				break;
 			}
 			mDao = new MemberDAO();
 			member = mDao.searchById(id);
@@ -59,6 +72,18 @@ public class MemberProc extends HttpServlet {
 			if (!request.getParameter("id").equals("")) {
 				id = Integer.parseInt(request.getParameter("id"));
 			}
+			
+			if(id!=(Integer)session.getAttribute("memberId")) {
+				
+				message = "id = " + id + " 에 대한 수정 권한이 없습니다..";
+				String url2 = "loginMain.jsp";
+				request.setAttribute("message", message);
+				request.setAttribute("url", url2);
+				rd = request.getRequestDispatcher("alertMsg.jsp");
+				rd.forward(request, response);
+				break;
+			}
+			
 			mDao = new MemberDAO();
 			mDao.deleteMember(id);
 			mDao.close();
@@ -69,6 +94,8 @@ public class MemberProc extends HttpServlet {
 			request.setAttribute("url", url);
 			rd = request.getRequestDispatcher("alertMsg.jsp");
 			rd.forward(request, response);
+			
+			
 			
 		case "login":		// login 할 때
 			if (!request.getParameter("id").equals("")) {
@@ -92,12 +119,21 @@ public class MemberProc extends HttpServlet {
 			mDao.close();
 			
 			if (result == MemberDAO.ID_PASSWORD_MATCH) {
+				member = mDao.searchById(id);
+				session.setAttribute("memberId", id);
+				session.setAttribute("memberName",member.getName());
 				response.sendRedirect("loginMain.jsp");
 			} else {
 				String uri = "login.jsp?error=" + URLEncoder.encode(errorMessage, "UTF-8");
 						//org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf(errorMessage), request.getCharacterEncoding());
 				response.sendRedirect(uri); 
 			}
+			break;
+		
+		case "logout":   //로그아웃할 때
+			session.removeAttribute("memberId");
+			session.removeAttribute("memberName");
+			response.sendRedirect("login.jsp"); // login.jsp로 보냄
 			break;
 			
 		case "register":		// 회원 등록할 때
@@ -110,6 +146,17 @@ public class MemberProc extends HttpServlet {
 			
 			mDao = new MemberDAO();
 			mDao.insertMember(member);
+			member = mDao.recentId();
+			session.setAttribute("memberId", member.getId());
+			session.setAttribute("memberName", name);
+			
+			message="귀하의 아이디는 " + member.getId() + "입니다.";
+			url = "loginMain.jsp";
+			request.setAttribute("message", message);
+			request.setAttribute("url", url);
+			rd = request.getRequestDispatcher("alertMsg.jsp");
+			rd.forward(request, response);
+			
 			mDao.close();
 			
 			response.sendRedirect("loginMain.jsp");

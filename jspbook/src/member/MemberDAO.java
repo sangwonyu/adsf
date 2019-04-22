@@ -128,6 +128,12 @@ public class MemberDAO {
 		}	
     }
     
+    public MemberDTO recentId() {
+    	String sql = "select * from member_table order by id desc limit 1;";
+    	MemberDTO mDto = selectOne(sql);
+		return mDto;
+    }
+    
     public MemberDTO searchById(int memberId) {
     	String sql = "select * from member_table where id=" + memberId + ";";
     	MemberDTO mDto = selectOne(sql);
