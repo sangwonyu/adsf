@@ -12,7 +12,7 @@
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-package org.mindrot.jbcrypt;
+package Exam0419_16;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;

@@ -33,14 +33,15 @@
 	String error = request.getParameter("error");
 	//String error = (String) request.getAttribute("error");
 	if (error != null) {
-		System.out.println(error);
+		//System.out.println(error);
 		out.println("<script>alert('" + error + "')</script>");
 	}
 %>
 	<center><br>
 	<h3>Member Login</h3><br>
 	<hr>
-	<form name="loginForm" action=/jspbook/member/loginProcServlet method=post>
+	<!-- <form name="loginForm" action=/jspbook/member/loginProcServlet method=post> -->
+	<form name="loginForm" action="/jspbook/member/memberProcServlet?action=login" method=post>
 		<label><span>ID:</span>
 			<input type="text" name="id" size="10"></label>
 		<label><span>Password:</span>
