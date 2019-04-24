@@ -23,6 +23,7 @@ public class MemberProc extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		doAction(request, response);
 	}
 
@@ -116,7 +117,7 @@ public class MemberProc extends HttpServlet {
 			case MemberDAO.DATABASE_ERROR:
 				errorMessage = "DB 오류";
 			}
-			mDao.close();
+			
 			
 			if (result == MemberDAO.ID_PASSWORD_MATCH) {
 				member = mDao.searchById(id);
@@ -128,6 +129,7 @@ public class MemberProc extends HttpServlet {
 						//org.apache.jasper.runtime.JspRuntimeLibrary.URLEncode(String.valueOf(errorMessage), request.getCharacterEncoding());
 				response.sendRedirect(uri); 
 			}
+			mDao.close();
 			break;
 		
 		case "logout":   //로그아웃할 때

@@ -21,8 +21,8 @@
 <div align=center>
 	<h3>My Simple Twitter!!</h3>
 	<hr>
-	<form action="tweet.jsp" method="POST">
-		@<%=session.getAttribute("user") %>
+	<form action="/jspbook/member/TwitProc" method="POST">
+		@<%=session.getAttribute("memberName") %>
 		<input type="text" name="msg">
 		<input type="submit" value="tweet">
 	</form>
