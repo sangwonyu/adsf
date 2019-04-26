@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -28,25 +29,16 @@
 	</style>
 </head>
 <body>
-<%
-	//request.setCharacterEncoding("UTF-8");
-	String error = request.getParameter("error");
-	//String error = (String) request.getAttribute("error");
-	if (error != null) {
-		//System.out.println(error);
-		out.println("<script>alert('" + error + "')</script>");
-	}
-%>
 	<center><br>
 	<h3>Member Login</h3><br>
 	<hr>
-	<form name="loginForm" action="/jspbook/member/memberProcServlet?action=login" method=post>
+	<form name="loginForm" action="memberProcServlet?action=login" method=post>
 		<label><span>ID:</span>
 			<input type="text" name="id" size="10"></label>
 		<label><span>Password:</span>
 			<input type="password" name="password" size="10"></label><br>
-		<input type="submit" value="로그인" name="B1">&nbsp;&nbsp;
-		<input type="reset" value="취소" name="B2">
+		<input type="submit" value="로그인" name="L1">&nbsp;&nbsp;
+		<input type="reset" value="취소" name="L2">
 	</form>
 		<br><br><button onclick="location.href='register.html'">회원 가입</button>
 </body>

@@ -1,5 +1,9 @@
 package member;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,6 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.mindrot.jbcrypt.BCrypt;
 
 public class MemberDAO {
 	public static final int ID_PASSWORD_MATCH = 1;
@@ -26,6 +32,31 @@ public class MemberDAO {
 			ex.printStackTrace();
 		}
     }
+     
+    public String prepareDownload() {
+    	
+    	
+    	StringBuffer sb = new StringBuffer();
+    	List<MemberDTO> bmList=selectAll(0);
+    	
+    	try {
+    		BufferedWriter fw= new BufferedWriter(new OutputStreamWriter(new FileOutputStream("C:/tmp/MemberList.csv"),"euc-kr"));
+    		String head="아이디,이름,생년월일,주소\n";
+    		sb.append(head);
+    		fw.write(head);
+    		for(MemberDTO mDto:bmList) {
+    			String line = mDto.getId()+","+mDto.getName()+"," + mDto.getBirthday()+","+mDto.getAddress()+"\n";
+    			sb.append(line);
+    			fw.write(line);
+    		}
+    		fw.flush();
+    		fw.close();
+    	} catch(IOException e) {
+    		e.printStackTrace();
+    	}
+    	return sb.toString();
+    }
+    
     
 	public int verifyIdPassword(int id, String password) {
 		System.out.println("verifyIdPassword(): " + id + ", " + password);
@@ -65,7 +96,7 @@ public class MemberDAO {
     	try {
     		String hashedPassword = BCrypt.hashpw(member.getPassword(), BCrypt.gensalt());
 			pStmt = conn.prepareStatement(query);
-			pStmt.setString(1, "*");
+			pStmt.setString(1, member.getPassword());
 			pStmt.setString(2, member.getName());
 			pStmt.setString(3, member.getBirthday());
 			pStmt.setString(4, member.getAddress());
@@ -171,6 +202,69 @@ public class MemberDAO {
 			}
 		}
     	return member;
+    }
+    
+    public List<MemberDTO> selectAll(int page) {
+    	int offset = 0;
+		String query = null;
+		if (page == 0) {	// page가 0이면 모든 데이터를 보냄
+			query = "select * from member_table;";
+		} else {			// page가 0이 아니면 해당 페이지 데이터만 보냄
+			query = "select * from member_table limit ?, 10;";
+			offset = (page - 1) * 10;
+		}
+    	PreparedStatement pStmt = null;
+    	List<MemberDTO> memberList = new ArrayList<MemberDTO>();
+    	try {
+			pStmt = conn.prepareStatement(query);
+			if (page != 0)
+				pStmt.setInt(1, offset);
+			ResultSet rs = pStmt.executeQuery();
+			
+			while (rs.next()) {
+				MemberDTO member = new MemberDTO();
+				member.setId(rs.getInt(1));
+				member.setPassword(rs.getString(2));
+				member.setName(rs.getString(3));
+				member.setBirthday(rs.getString(4));
+				member.setAddress(rs.getString(5));
+				memberList.add(member);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pStmt != null && !pStmt.isClosed()) 
+					pStmt.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+    	return memberList;
+    }
+    
+    public int getCount() {
+    	String query = "select count(*) from member_table;";
+		PreparedStatement pStmt = null;
+		int count = 0;
+		try {
+			pStmt = conn.prepareStatement(query);
+			ResultSet rs = pStmt.executeQuery();
+			while (rs.next()) {				
+				count = rs.getInt(1);
+			}
+			rs.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pStmt != null && !pStmt.isClosed()) 
+					pStmt.close();
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		return count;
     }
     
     public List<MemberDTO> selectAll() {

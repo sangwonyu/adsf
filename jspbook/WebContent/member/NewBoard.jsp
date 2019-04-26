@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>게시판 수정</title>
+<title>게시판 작성</title>
 
 <style>
 		label {
@@ -32,11 +32,15 @@
 			<tr><td><label><span><strong>content:</strong></span></td><td>
 			<textarea name="content" cols="40" rows="20" ></textarea>
 			</label></td></tr>
-			</table>
-			<label><span></span><input type="submit" value="게시물 작성" name="B1">&nbsp;&nbsp;
-				<input type="reset" value="재작성" name="B2"></label>
-		</form>
-	
+			
+			<label ><tr><td><p></p></td><td><input type="submit" value="게시물 작성" name="B1">
+				 <input type="reset" value="재작성" name="B2">
+			</form>
+				 <button onclick="location.href='BoardProcServlet?action=list&page=1'">목록으로</button></td>
+			</tr></label>
+		
+		
+	</table>
 </head>
 <body>
 

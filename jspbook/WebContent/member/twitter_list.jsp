@@ -26,6 +26,8 @@
 		<input type="text" name="msg">
 		<input type="submit" value="tweet">
 	</form>
+	<br>
+	<button onclick="location.href='memberProcServlet?action=list&page=1'">목록으로</button>
 	<hr>
 	<div align="left">
 	<UL>

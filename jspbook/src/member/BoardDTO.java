@@ -7,7 +7,7 @@ public class BoardDTO {
 	private String title;
 	private String content;
 	private String name;
-	
+
 	
 	public BoardDTO(int id, int memberId, String title, String date, String content) {
 		super();
@@ -20,7 +20,13 @@ public class BoardDTO {
 	
 	public BoardDTO() {}
 
-	public BoardDTO(int memberId,String title,String content) {
+	public BoardDTO(int id,String title,String content) {
+		this.id = id;
+		this.title=title;
+		this.content = content;
+	}
+	
+	public BoardDTO(int memberId,String title, String date, String content) {
 		this.memberId = memberId;
 		this.title=title;
 		this.content = content;

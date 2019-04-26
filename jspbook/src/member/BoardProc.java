@@ -2,6 +2,7 @@ package member;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -34,25 +35,55 @@ public class BoardProc extends HttpServlet {
 		String date = null;
 		String content = null;
 		String message = null;
+		int curPage = 1;
 		HttpSession session = request.getSession();
-		int memberId=(int)session.getAttribute("memberId");
+		int memberId=(int)session.getAttribute("memberId"); // member_talbe의 id 값
 		request.setCharacterEncoding("UTF-8");
 		String action = request.getParameter("action");
-		
+		List<String> pageList = new ArrayList<String>();
 		switch(action) {
+		 
+		case "list":
+			if (!request.getParameter("page").equals("")) {
+				curPage = Integer.parseInt(request.getParameter("page"));
+			}
+			bDao = new BoardDAO();
+			int count = bDao.getCount();
+			if (count == 0)			// 데이터가 없을 때 대비
+				count = 1;
+			int pageNo = (int)Math.ceil(count/10.0);
+			if (curPage > pageNo)	// 경계선에 걸렸을 때 대비
+				curPage--;
+			session.setAttribute("currentBbsPage", curPage);
+			// 리스트 페이지의 하단 페이지 데이터 만들어 주기
+			String page = null;
+			page = "<a href=#>&laquo;</a>&nbsp;";
+			pageList.add(page);
+			for (int i=1; i<=pageNo; i++) {
+				page = "&nbsp;<a href=BoardProcServlet?action=list&page=" + i + ">" + i + "</a>&nbsp;";
+				pageList.add(page);
+			}
+			page = "&nbsp;<a href=#>&raquo;</a>";
+			pageList.add(page);
+			
+			List<BbsMember> bmList = bDao.selectJoinAll(curPage);
+			request.setAttribute("bbsMemberList", bmList);
+			request.setAttribute("pageList", pageList);
+			rd = request.getRequestDispatcher("board_list.jsp");
+	        rd.forward(request, response);
+			break;
 		
 		case "addBoard" :
 			title = request.getParameter("title");
 			content= request.getParameter("content");
 			
-			board = new BoardDTO(memberId, title, content);
+			board = new BoardDTO(memberId, title,"", content);
 			
 			bDao = new BoardDAO();
 			bDao.addBoard(board);
 			bDao.close();
 			
-			
-			response.sendRedirect("board_list.jsp");
+			response.sendRedirect("BoardProcServlet?action=list&page=1");
 			break;
 		
 		case "detail":		// 상세페이지
@@ -61,10 +92,11 @@ public class BoardProc extends HttpServlet {
 			}
 
 			bDao = new BoardDAO();
-			board = bDao.searchById(id);
+			board = bDao.searchById(id);//id 글번호
 			System.out.println();
 			bDao.close();
 			request.setAttribute("board", board);
+			
 			rd = request.getRequestDispatcher("board_detail.jsp");
 	        rd.forward(request, response);
 	        break;
@@ -83,7 +115,7 @@ public class BoardProc extends HttpServlet {
 			if(board.getMemberId()!=(Integer)session.getAttribute("memberId")) {
 				
 				message = "id = " + id + " 에 대한 수정 권한이 없습니다..";
-				String url = "board_list.jsp";
+				String url = "boardProcServlet?action=list&page=1";
 				request.setAttribute("message", message);
 				request.setAttribute("url", url);
 				rd = request.getRequestDispatcher("alertMsg.jsp");
@@ -112,7 +144,7 @@ public class BoardProc extends HttpServlet {
 			if(num3!=(Integer)session.getAttribute("memberId")) {
 				
 				message = "id = " + id + " 에 대한 수정 권한이 없습니다..";
-				String url2 = "board_list.jsp";
+				String url2 = "boardProcServlet?action=list&page=1";
 				request.setAttribute("message", message);
 				request.setAttribute("url", url2);
 				rd = request.getRequestDispatcher("alertMsg.jsp");
@@ -125,7 +157,7 @@ public class BoardProc extends HttpServlet {
 			bDao.close();
 			//response.sendRedirect("loginMain.jsp");
 			message = "id = " + id + " 이/가 삭제되었습니다.";
-			String url = "board_list.jsp";
+			String url = "BoardProcServlet?action=list&page=1";
 			request.setAttribute("message", message);
 			request.setAttribute("url", url);
 			rd = request.getRequestDispatcher("alertMsg.jsp");
@@ -146,7 +178,9 @@ public class BoardProc extends HttpServlet {
 			
 			message = "다음과 같이 수정하였습니다.\\n" + board.toString();
 			request.setAttribute("message", message);
-			request.setAttribute("url", "board_list.jsp");
+			curPage = (int)session.getAttribute("currentMemberPage");
+			url = "BoardProcServlet?action=list&page=" + curPage;
+			request.setAttribute("url", url);
 			rd = request.getRequestDispatcher("alertMsg.jsp");
 	        rd.forward(request, response);
 			//response.sendRedirect("loginMain.jsp");
